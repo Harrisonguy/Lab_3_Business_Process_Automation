@@ -48,14 +48,21 @@ def process_sales_data(sales_csv, orders_dir):
         order_file_name = f'Order{order_id}_{customer_name}.xlsx'
         order_file_path = os.path.join(orders_dir, order_file_name)
         sheet_name = f'Order {order_id}'
-        order_df.to_excel(order_file_path,index=False ,sheet_name=sheet_name)
-
-
-    # Group the rows in the DataFrame by order ID
-    # For each order ID:
-        # TODO: Format the Excel sheet
-        print(order_df)#for debugging
-        pass 
+    
+        writer = pd.ExcelWriter(order_file_path, engine='xlsxwriter')
+        order_df.to_excel(writer, index=False, sheet_name=sheet_name)
+        workbook  = writer.book
+        worksheet = writer.sheets[sheet_name]
+        money_format = workbook.add_format({'num_format': '$#,##0.00'})
+        worksheet.set_column(0, 0, 11, None)
+        worksheet.set_column(1, 1, 13, None)
+        worksheet.set_column(2, 4, 15, None)
+        worksheet.set_column(5, 6, 13, money_format)
+        worksheet.set_column(7, 7, 10, None)
+        worksheet.set_column(8, 8, 30, None)
+        writer.close()
+        pass
+    return
 
 if __name__ == '__main__':
     main()
